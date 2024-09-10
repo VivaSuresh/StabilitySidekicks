@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Typography, Button, Container, Box } from '@mui/material';
 import SafetyAdviceSection from './SafetyAdviceSection';
 
 const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
+  const [image, setImage] = useState(null);
+  const [backendImage, setBackendImage] = useState(null);
+  const [advice, setAdvice] = useState('');
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    setImage(URL.createObjectURL(file)); // Preview image locally
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('http://localhost:5000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      setBackendImage(result.image_url); // Assuming backend returns image URL
+      setAdvice(result.advice); // Assuming backend returns advice
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ padding: '50px 0', backgroundColor: '#F7F7F7' }}>
       <Grid container spacing={3} alignItems="center">
@@ -18,7 +43,7 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
           <input
             type="file"
             accept="image/*"
-            onChange={onImageUpload}
+            onChange={handleImageUpload}
             style={{ display: 'none' }}
             id="imageUpload"
           />
@@ -29,10 +54,10 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
           </label>
 
           {/* Display uploaded image */}
-          {uploadedImage && (
+          {image && (
             <Box sx={{ marginTop: '20px' }}>
               <img 
-                src={uploadedImage} 
+                src={image} 
                 alt="Uploaded Preview" 
                 style={{ width: '100%', maxWidth: '500px', margin: '20px auto', display: 'block' }} 
               />
@@ -40,9 +65,9 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
           )}
 
           {/* Show Safety Advice */}
-          {safetyAdvice && (
+          {advice && (
             <Box sx={{ marginTop: '20px' }}>
-              <SafetyAdviceSection advice={safetyAdvice} />
+              <SafetyAdviceSection advice={advice} />
             </Box>
           )}
         </Grid>
