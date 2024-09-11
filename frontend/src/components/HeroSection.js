@@ -9,6 +9,12 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
+
+    if (!file) {
+      console.error("No file selected");
+      return; // Exit if no file is selected
+    }
+    
     setImage(URL.createObjectURL(file)); // Preview image locally
 
     const formData = new FormData();
@@ -20,7 +26,9 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
         body: formData,
       });
 
+      console.log(response.status);
       const result = await response.json();
+      console.log(result);
       setBackendImage(result.image_url); // Assuming backend returns image URL
       setAdvice(result.advice); // Assuming backend returns advice
     } catch (error) {

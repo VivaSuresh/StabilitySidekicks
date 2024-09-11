@@ -15,11 +15,21 @@ def upload_file():
     if file:
         # Save image to uploads
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        print("Saving file")
         file.save(file_path)
 
         # Process image and get advice from Gemini API
         advice = process_image_and_send_to_gemini(file_path)
+        print(f"Sending response: {file_path}, {advice}")
 
+        # Delete the file after sending the response
+        try:
+            os.remove(file_path)
+            print(f"Deleted file: {file_path}")
+        except Exception as e:
+            print(f"Error deleting file: {e}")
+
+        # Delete file here
         return jsonify({
             "image_url": file_path,
             "advice": advice
