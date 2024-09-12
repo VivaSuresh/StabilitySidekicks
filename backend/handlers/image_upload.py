@@ -1,10 +1,13 @@
 import os
-from flask import request, jsonify
-from handlers.gemini_integration import process_image_and_send_to_gemini
+from flask import request, jsonify, g
+from handlers.gemini_integration import GeminiAPIClient
 
 UPLOAD_FOLDER = './uploads'
 
 def upload_file():
+
+    client = g.client
+    
     if 'image' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
@@ -19,7 +22,7 @@ def upload_file():
         file.save(file_path)
 
         # Process image and get advice from Gemini API
-        advice = process_image_and_send_to_gemini(file_path)
+        advice = client.analyze_image(file_path)
         print(f"Sending response: {file_path}, {advice}")
 
         # Delete the file after sending the response

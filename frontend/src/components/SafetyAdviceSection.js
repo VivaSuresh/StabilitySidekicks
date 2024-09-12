@@ -9,7 +9,7 @@ const SafetyAdviceCard = ({ advice }) => {
           Safety Advice
         </Typography>
         <Typography variant="body1" sx={{ color: '#34495E', fontSize: '1.1rem' }}>
-          {advice}
+          <span dangerouslySetInnerHTML={{ __html: advice }} />
         </Typography>
       </CardContent>
     </Card>
