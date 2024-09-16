@@ -12,6 +12,8 @@ def upload_file():
         return jsonify({"error": "No file part"}), 400
 
     file = request.files['image']
+    
+    # print(text)
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
@@ -21,8 +23,10 @@ def upload_file():
         print("Saving file")
         file.save(file_path)
 
+        additional_info = request.form.get('text', '')  # Default to an empty string if no text provided
+
         # Process image and get advice from Gemini API
-        advice = client.analyze_image(file_path)
+        advice = client.analyze_image(file_path, additional_info)
         print(f"Sending response: {file_path}, {advice}")
 
         # Delete the file after sending the response

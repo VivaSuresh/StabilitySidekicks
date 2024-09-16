@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
-import { Grid, Typography, Button, Container, Box } from '@mui/material';
+import { Grid, Typography, Button, Container, Box, TextField } from '@mui/material';
 import SafetyAdviceSection from './SafetyAdviceSection';
 
 const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
   const [image, setImage] = useState(null);
   const [backendImage, setBackendImage] = useState(null);
   const [advice, setAdvice] = useState('');
+  const [userText, setUserText] = useState(''); // New state for text input
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
 
     if (!file) {
       console.error("No file selected");
-      return; // Exit if no file is selected
+      return;
     }
-    
+
     setImage(URL.createObjectURL(file)); // Preview image locally
 
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('text', userText); // Append text to form data
 
     try {
       const response = await fetch('http://localhost:5000/upload', {
@@ -36,6 +38,10 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
     }
   };
 
+  const handleTextChange = (event) => {
+    setUserText(event.target.value); // Update text input state
+  };
+
   return (
     <Container maxWidth="lg" sx={{ padding: '50px 0', backgroundColor: '#F7F7F7' }}>
       <Grid container spacing={3} alignItems="center">
@@ -46,6 +52,16 @@ const HeroSection = ({ onImageUpload, uploadedImage, safetyAdvice }) => {
           <Typography variant="body1" paragraph sx={{ color: '#34495E', fontSize: '1.2rem' }}>
             Upload pictures of your rooms and furniture, and we’ll help you find ways to prevent falls with tailored safety advice.
           </Typography>
+
+          {/* Text Input Field */}
+          <TextField
+            label="Optional Additional Information About Room"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={userText}
+            onChange={handleTextChange} // Handle text change
+          />
 
           {/* Image Upload Button */}
           <input

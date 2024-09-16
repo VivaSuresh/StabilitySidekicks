@@ -69,7 +69,7 @@ class GeminiAPIClient:
         self.context_files = [self.upload_to_gemini(pdf, mime_type="application/pdf") for pdf in pdf_paths]
         self.wait_for_files_active(self.context_files)
 
-    def analyze_image(self, image_path):
+    def analyze_image(self, image_path, additional_info):
         """Analyze an uploaded image using Gemini, leveraging the previously uploaded PDFs as context."""
 
         file_extension = os.path.splitext(image_path)[1].lower()
@@ -86,7 +86,8 @@ class GeminiAPIClient:
         image_file = self.upload_to_gemini(image_path, mime_type=mime_type)
         self.wait_for_files_active([image_file])
 
-        prompt = ["Take in the image that is given and responding according to the system prompt as well as the provided pdf context."]
+        prompt = ["Take in the image that is given and responding according to the system prompt as well as the provided pdf context. Also, if additional text is provided, use that as well."]
+        prompt.append(additional_info)
         prompt.append(image_file)
         prompt.extend(self.context_files)
         # print(prompt)
